@@ -1,0 +1,27 @@
+[
+ {
+  "id": "JA_L000001",
+  "seq": 1,
+  "position": 1,
+  "title": "Personal Pronouns",
+  "subtitle": "",
+  "description": "Learn the basic Japanese pronouns for I, you, he, and we.",
+  "level": "beginner",
+  "status": "published",
+  "colour": null,
+  "icon": null,
+  "tags": [],
+  "words": [
+   "JA_000296",
+   "JA_000339",
+   "JA_000341",
+   "JA_000496",
+   "JA_000656",
+   "JA_000724",
+   "JA_000781",
+   "JA_000590"
+  ],
+  "sentences": [],
+  "word_count": 8
+ }
+]
