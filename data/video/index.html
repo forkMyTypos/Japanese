@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Japanese words in any YouTube video</title>
+<meta name="description" content="Paste a YouTube link and see which Japanese words from this course the video uses, and when each one is said — with the picture, the meaning and the recording already made for it."/>
+<link rel="canonical" href="jp.inaflash.cards/video/"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Japanese words in any YouTube video"/>
+<meta property="og:description" content="Paste a YouTube link and see which Japanese words from this course the video uses, and when each one is said — with the picture, the meaning and the recording already made for it."/>
+<meta property="og:url" content="jp.inaflash.cards/video/"/>
+<meta property="og:site_name" content="Learn Japanese with Flashcards"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Japanese words in any YouTube video"/>
+<meta name="twitter:description" content="Paste a YouTube link and see which Japanese words from this course the video uses, and when each one is said — with the picture, the meaning and the recording already made for it."/>
+<meta name="theme-color" content="#0d0d14"/>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="1.5" y="1.5" width="21" height="21" rx="5" fill="%2310131f" stroke="%233b82f6" stroke-width="1"/><polygon points="12.67 4.5 6 13.5 12 13.5 11.33 19.5 18 10.5 12 10.5 12.67 4.5" fill="%233b82f6"/></svg>'/>
+<link rel="stylesheet" href="../style.css?v=8cc86595"/>
+</head>
+<body class="shell" data-root=".." data-transcript="/api/transcript">
+<div class="page">
+<aside class="menu">
+  <a class="brand" href="jp.inaflash.cards/"><span class="bolt">⚡</span> Japanese.inaflash</a>
+  <div class="find"><input id="find" type="search" placeholder="Search lessons and words" aria-label="Search lessons and words" autocomplete="off"/></div>
+  <nav id="nav">
+    <div class="grp" data-grp>Lessons</div>
+<a class="item" href="jp.inaflash.cards/01-personal-pronouns/" data-title="personal pronouns">Personal Pronouns<span class="sub">01 · 8 words</span></a>
+    <div class="none" id="nohits" hidden>Nothing matches.</div>
+  </nav>
+  <a class="item" href="jp.inaflash.cards/video/" style="margin:6px 8px 0">▶ From a YouTube video<span class="sub">paste a link, see which of these words it uses</span></a>
+  <div class="foot">A free Japanese vocabulary course · studied with <a href="https://inaflash.cards" target="_blank" rel="noopener">inaflash.cards</a></div>
+</aside>
+<div class="scrim" id="scrim"></div>
+  <div class="slider">
+    <button class="burger" id="burger" aria-label="Menu">☰</button>
+    <div class="name"><a href="jp.inaflash.cards/">Learn Japanese with Flashcards</a> / From a YouTube video</div>
+  </div>
+  <div class="wide">
+    <h1 style="font-size:26px;color:#fff;line-height:1.25">Japanese words in any YouTube video</h1>
+    <p class="lead">Paste a YouTube link and see which Japanese words from this course the video uses, and when each one is said — with the picture, the meaning and the recording already made for it.</p>
+    <form id="vform" class="paste">
+      <input id="vurl" type="url" inputmode="url" placeholder="https://www.youtube.com/watch?v=…" aria-label="YouTube link"/>
+      <button id="vgo" class="btn primary" type="submit">Find the words</button>
+    </form>
+    <p class="cta-note" style="margin-top:10px">It reads the video's own captions. Videos with subtitles turned off have nothing to read.</p>
+    <div id="vout"></div>
+  </div>
+</div>
+<script>window.WB_LESSONS={"JA_L000001":{"title":"Personal Pronouns","href":"jp.inaflash.cards/01-personal-pronouns/"}};</script>
+<script>
+(function(){
+ var nav=document.getElementById('nav'),find=document.getElementById('find'),
+     none=document.getElementById('nohits'),idx=null,idxTried=false;
+ function items(){return nav?nav.querySelectorAll('a.item'):[];}
+ function filter(q){
+  q=(q||'').trim().toLowerCase();var hits=0,i,a=items();
+  for(i=0;i<a.length;i++){
+   var t=a[i].dataset.title||'',w=a[i].dataset.words||'',
+       dup=a[i].classList.contains('dup');
+   // the shortcut list at the top repeats lessons from the full one below;
+   // while searching, only the full list answers, so a hit appears once
+   var on=q?(!dup&&(t.indexOf(q)>=0||w.indexOf(q)>=0)):true;
+   a[i].hidden=!on;if(on&&q)hits++;
+  }
+  var g=nav?nav.querySelectorAll('[data-grp]'):[];
+  for(i=0;i<g.length;i++)g[i].hidden=!!q;
+  if(none)none.hidden=!q||hits>0;
+ }
+ function loadIndex(){
+  if(idxTried)return;idxTried=true;
+  var base=document.body.dataset.root||'';
+  fetch(base+'/search.json').then(function(r){return r.json();}).then(function(j){
+   idx=j;var a=items(),by={},i;
+   for(i=0;i<(j.lessons||[]).length;i++)by[j.lessons[i].folder]=j.lessons[i].words;
+   for(i=0;i<a.length;i++){
+    var m=a[i].getAttribute('href').replace(/\/$/,'').split('/').pop();
+    if(by[m])a[i].dataset.words=by[m];
+   }
+   filter(find?find.value:'');
+  }).catch(function(){});
+ }
+ if(find){find.addEventListener('input',function(){loadIndex();filter(find.value);});
+          find.addEventListener('focus',loadIndex);}
+
+ var cards=[].slice.call(document.querySelectorAll('.card')),at=0,
+     prev=document.getElementById('prev'),next=document.getElementById('next'),
+     count=document.getElementById('count'),scrub=document.getElementById('scrub'),
+     pic=document.getElementById('pic');
+ function show(n){
+  if(!cards.length)return;
+  at=Math.max(0,Math.min(cards.length-1,n));
+  for(var i=0;i<cards.length;i++)cards[i].hidden=(i!==at);
+  if(count)count.textContent=(at+1)+' / '+cards.length;
+  if(prev)prev.disabled=at===0;
+  if(next)next.disabled=at===cards.length-1;
+  if(scrub)scrub.value=at+1;
+  if(pic){
+   var c=cards[at],src=c.dataset.img||'',alt=c.dataset.alt||'',
+       ch=c.dataset.ch||'';
+   pic.innerHTML='';
+   var f=document.createElement('figure');
+   function blank(){var d=document.createElement('div');d.className='nopic';
+                    d.textContent=ch;return d;}
+   if(src){
+    var im=new Image();im.alt=alt;im.loading='eager';
+    // a picture that will not load leaves the alt text sitting in the middle
+    // of an empty column, which reads as a broken page rather than a word
+    // without a picture yet
+    im.onerror=function(){f.innerHTML='';f.appendChild(blank());};
+    im.src=src;f.appendChild(im);
+   }else{f.appendChild(blank());}
+   pic.appendChild(f);
+  }
+  if(history.replaceState)history.replaceState(null,'','#'+(at+1));
+ }
+ if(prev)prev.onclick=function(){show(at-1);};
+ if(next)next.onclick=function(){show(at+1);};
+ if(scrub)scrub.oninput=function(){show(+scrub.value-1);};
+ document.addEventListener('keydown',function(e){
+  if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;
+  if(e.key==='ArrowLeft')show(at-1);
+  if(e.key==='ArrowRight')show(at+1);
+ });
+ if(cards.length){
+  var start=parseInt((location.hash||'').slice(1),10);
+  show(isFinite(start)&&start>0?start-1:0);
+ }
+ document.addEventListener('click',function(e){
+  var b=e.target.closest?e.target.closest('[data-play]'):null;
+  if(b){new Audio(b.dataset.play).play();}
+ });
+
+ // Remember where the reader got to, so the front page can send them back.
+ // Only a real lesson page writes it: the front page renders lesson one for
+ // everyone who has not been here, and it should not thereby claim that
+ // lesson one is where they left off.
+ try{var mine=document.body.dataset.lesson;
+     if(mine)localStorage.setItem('wb.last',mine);}catch(e){}
+
+ // ☰ — a drawer on a phone, a collapse on a laptop. Same button, because it
+ // means the same thing: show me the menu, or give me the room back.
+ var burger=document.getElementById('burger'),scrim=document.getElementById('scrim'),
+     phone=function(){return matchMedia('(max-width:900px)').matches;};
+ function menu(open){
+  if(phone())document.body.classList.toggle('menu-open',open);
+  else{document.body.classList.toggle('menu-hidden',!open);
+       try{localStorage.setItem('menu',open?'1':'0');}catch(e){}}
+ }
+ function isOpen(){return phone()?document.body.classList.contains('menu-open')
+                                :!document.body.classList.contains('menu-hidden');}
+ try{if(localStorage.getItem('menu')==='0')
+      document.body.classList.add('menu-hidden');}catch(e){}
+ if(burger)burger.onclick=function(){menu(!isOpen());};
+ if(scrim)scrim.onclick=function(){menu(false);};
+ if(nav)nav.addEventListener('click',function(e){
+  if(e.target.closest&&e.target.closest('a')&&phone())menu(false);});
+ document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&phone())menu(false);});
+})();
+</script>
+<script>
+(function(){
+ var form=document.getElementById('vform'),input=document.getElementById('vurl'),
+     out=document.getElementById('vout'),go=document.getElementById('vgo'),
+     ENDPOINT=document.body.dataset.transcript||'/api/transcript',
+     cards=null,index=null,maxLen=1;
+
+ function say(html,cls){out.className='';if(cls)out.className=cls;
+                        out.innerHTML=html;}
+ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+ // The vocabulary, indexed by text. Same idea as the tokeniser in the app:
+ // the dictionary IS the segmenter, because Thai has no spaces and the only
+ // words worth finding are the ones this course teaches.
+ function loadCards(){
+  if(cards)return Promise.resolve(cards);
+  var base=document.body.dataset.root||'.';
+  return fetch(base+'/th/cards.json').then(function(r){
+   if(!r.ok)throw new Error('could not load the course vocabulary');
+   return r.json();
+  }).then(function(j){
+   cards=Array.isArray(j)?j:(j.cards||[]);
+   index={};
+   for(var i=0;i<cards.length;i++){
+    var w=(cards[i].word||'').normalize('NFC').trim();
+    if(!w)continue;
+    if(!(w in index))index[w]=cards[i];
+    if(w.length>maxLen)maxLen=Math.min(w.length,30);
+   }
+   return cards;
+  });
+ }
+
+ var PUNCT=' \t\n\r ​!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ๆฯ…“”‘’–—';
+ // Longest match wins: ข้าวเหนียว is one word, not ข้าว + เหนียว.
+ function match(text,hits,unknown,at){
+  text=(text||'').normalize('NFC');
+  var i=0,n=text.length,pendStart=-1;
+  function flush(end){
+   if(pendStart<0)return;
+   var span=text.slice(pendStart,end).trim();
+   if(span.length>1)unknown[span]=(unknown[span]||0)+1;
+   pendStart=-1;
+  }
+  while(i<n){
+   if(PUNCT.indexOf(text[i])>=0){flush(i);i++;continue;}
+   var found=null,len=Math.min(maxLen,n-i);
+   for(;len>0;len--){
+    var cand=text.substr(i,len);
+    if(index[cand]){found=cand;break;}
+   }
+   if(found){
+    flush(i);
+    var card=index[found],rec=hits[card.id];
+    if(!rec){rec=hits[card.id]={card:card,count:0,at:[]};}
+    rec.count++;
+    if(rec.at.length<6&&rec.at.indexOf(at.time)<0)
+     rec.at.push(at.time),rec.secs=rec.secs||[],
+     rec.secs.push(Math.round(at.start_ms/1000));
+    i+=found.length;
+   }else{
+    if(pendStart<0)pendStart=i;
+    i++;
+   }
+  }
+  flush(n);
+ }
+
+ function render(data,hits,unknown){
+  var list=Object.keys(hits).map(function(k){return hits[k];});
+  list.sort(function(a,b){return (a.secs&&a.secs[0]||0)-(b.secs&&b.secs[0]||0);});
+  var unknownList=Object.keys(unknown)
+    .sort(function(a,b){return unknown[b]-unknown[a];}).slice(0,60);
+  var vid=data.video.id;
+
+  var html=''
+   +'<div class="vstat">'
+   +'<div><b>'+list.length+'</b><span>words from this course</span></div>'
+   +'<div><b>'+data.segment_count+'</b><span>caption lines</span></div>'
+   +'<div><b>'+unknownList.length+'</b><span>words it uses that the course does not</span></div>'
+   +'</div>';
+
+  if(!list.length){
+   html+='<p class="cta-note" style="margin-top:18px">None of this course\'s '
+       +'words turned up in that video. It may be on a subject the course does '
+       +'not cover yet — or its captions may be in another language.</p>';
+  }else{
+   html+='<h2 class="sec-h">In this video, in the order they are said</h2>'
+       +'<div class="vhits">';
+   for(var i=0;i<list.length;i++){
+    var r=list[i],c=r.card,
+        img=(c.images&&c.images[0])
+            ?'<img src="'+esc(c.images[0])+'" alt="" loading="lazy"/>'
+            :(c.emoji?'<div class="vemoji">'+esc(c.emoji)+'</div>':''),
+        aud=(c.audio&&c.audio.word)
+            ?'<button class="say" data-play="'+esc(c.audio.word)+'" '
+             +'aria-label="Play">&#128266;</button>':'',
+        times='';
+    for(var k=0;k<r.at.length;k++){
+     times+='<a href="https://www.youtube.com/watch?v='+esc(vid)+'&t='
+          +(r.secs[k]||0)+'s" target="_blank" rel="noopener">'
+          +esc(r.at[k])+'</a>';
+    }
+    html+='<div class="vcard">'+img+'<div class="b">'
+        +'<div class="w" lang="th">'+esc(c.word)+aud+'</div>'
+        +(c.romanization?'<div class="r">'+esc(c.romanization)+'</div>':'')
+        +'<div class="m">'+esc(c.meanings)+'</div>'
+        +'<div class="at">'+times+'</div>'
+        +'</div></div>';
+   }
+   html+='</div>';
+
+   // Where to actually study them. Every one of these words belongs to a
+   // lesson that already has a working Study button, so the honest thing is
+   // to send people there rather than mint a deck this page cannot host.
+   var lessons={};
+   for(var j=0;j<list.length;j++){
+    var ls=list[j].card.lessons||[];
+    for(var m=0;m<ls.length;m++)lessons[ls[m]]=(lessons[ls[m]]||0)+1;
+   }
+   var lids=Object.keys(lessons).sort(function(a,b){
+    return lessons[b]-lessons[a];});
+   if(lids.length&&window.WB_LESSONS){
+    html+='<h2 class="sec-h">Study them</h2><ol class="lesson-list">';
+    for(var q=0;q<Math.min(lids.length,5);q++){
+     var L=window.WB_LESSONS[lids[q]];
+     if(!L)continue;
+     html+='<li><a class="lesson-link" href="'+esc(L.href)+'">'
+         +'<span class="num">'+lessons[lids[q]]+'</span>'
+         +'<span class="meta"><span class="lt">'+esc(L.title)+'</span>'
+         +'<span class="ld">'+lessons[lids[q]]+' of its words are in this '
+         +'video</span></span><span class="go">&rarr;</span></a></li>';
+    }
+    html+='</ol>';
+   }
+  }
+
+  if(unknownList.length){
+   html+='<h2 class="sec-h">It also uses these, which the course has not '
+       +'taught yet</h2><div class="vmiss" lang="th">'
+       +unknownList.map(esc).join(' ')+'</div>';
+  }
+  say(html);
+ }
+
+ function run(url){
+  say('<p class="cta-note">Reading the captions&hellip;</p>');
+  go.disabled=true;
+  Promise.all([
+   loadCards(),
+   fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},
+                   body:JSON.stringify({url:url,lang:'th'})})
+    .then(function(r){return r.json().then(function(j){
+     if(!r.ok)throw new Error(j.error||('the transcript service said '+r.status));
+     return j;});})
+  ]).then(function(both){
+   var data=both[1],hits={},unknown={};
+   for(var i=0;i<data.segments.length;i++)
+    match(data.segments[i].text,hits,unknown,data.segments[i]);
+   render(data,hits,unknown);
+  }).catch(function(e){
+   say('<p class="cta-note" style="color:#e08a8a">'+esc(e.message)+'</p>');
+  }).then(function(){go.disabled=false;});
+ }
+
+ if(form)form.addEventListener('submit',function(e){
+  e.preventDefault();
+  var v=(input.value||'').trim();
+  if(!v)return;
+  history.replaceState(null,'','?v='+encodeURIComponent(v));
+  run(v);
+ });
+ var pre=new URLSearchParams(location.search).get('v');
+ if(pre){input.value=pre;run(pre);}
+})();
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Japanese words in any YouTube video","description":"Paste a YouTube link and see which Japanese words from this course the video uses, and when each one is said — with the picture, the meaning and the recording already made for it.","url":"jp.inaflash.cards/video/","applicationCategory":"EducationalApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isPartOf":{"@type":"Course","name":"Learn Japanese with Flashcards","url":"jp.inaflash.cards/"}}</script></body></html>
